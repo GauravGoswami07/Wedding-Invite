@@ -26,112 +26,555 @@
 </head>
 <body class="p-2 sm:p-4 md:p-8 flex flex-col items-center">
 
-  <!-- Loading Screen -->
-  <div id="loading" class="loading-screen font-cinzel text-xl text-yellow-500">
-    <i class="fa-solid fa-rings-wedding text-4xl mb-4 animate-pulse"></i>
-    Opening Invitation...
-  </div>
-  
-  <div id="petals-container" class="fixed inset-0 pointer-events-none z-30 overflow-hidden"></div>
+    <!-- Falling Marigold / Rose Petals Container -->
+    <div id="petals-container" class="fixed inset-0 pointer-events-none z-30 overflow-hidden"></div>
 
-  <!-- MAIN CARD CONTAINER -->
-  <main id="card-container" class="w-full max-w-2xl flex flex-col items-center gap-10 mb-16 opacity-0 transition-opacity duration-1000">
-    
-    <!-- PAGE 1: COVER -->
-    <section class="wedding-page wedding-card-sheet w-full rounded-2xl p-6 sm:p-10 relative overflow-hidden">
-      <div class="ornate-gold-border rounded-xl p-5 sm:p-8 flex flex-col items-center relative min-h-[700px] justify-between">
-        
-        <!-- Headers & Names -->
-        <div class="w-full flex flex-col items-center pt-2">
-          <div class="text-center my-1 mt-10">
-            <h2 class="text-4xl sm:text-5xl font-playfair font-bold card-crimson tracking-wider">Priyanka</h2>
-            <span class="font-script text-3xl sm:text-4xl text-amber-800 my-2 block italic">Weds</span>
-            <h2 class="text-4xl sm:text-5xl font-playfair font-bold card-crimson tracking-wider">Snehal</h2>
-          </div>
-        </div>
+    <!-- Guest-facing header: no admin controls -->
+    <header class="no-print w-full max-w-4xl bg-gradient-to-r from-red-950 via-[#420a11] to-red-950 border border-yellow-600/40 rounded-2xl p-4 mb-6 shadow-2xl backdrop-blur-md text-amber-100 text-center">
+        <h1 class="font-cinzel text-base md:text-lg font-bold text-yellow-300 tracking-wider">
+            Priyanka &amp; Snehal's Wedding
+        </h1>
+        <p class="text-xs text-amber-200/70 font-bengali mt-1">শুভ বিবাহ • ২৫শে নভেম্বর, ২০২৬ (৮ই অগ্রহায়ণ ১৪৩৩)</p>
+    </header>
 
-        <!-- THE SECURE GUEST NAME DISPLAY -->
-        <div class="w-full my-10 bg-gradient-to-r from-amber-100/50 via-amber-50/80 to-amber-100/50 p-6 rounded-xl border border-amber-300/80 shadow-inner text-center">
-          <span class="text-xs uppercase font-cinzel font-bold text-amber-900/80 tracking-widest flex items-center justify-center gap-1.5 mb-2">
-            <i class="fa-solid fa-envelope-open-text text-yellow-700"></i> To,
-          </span>
-          <div class="text-sm font-semibold text-amber-950/70 mb-2">Mrs. / Mr.</div>
-          
-          <!-- Fetched from Database via API -->
-          <div id="guest-name-display" class="text-2xl sm:text-3xl font-serif font-bold text-[#8e1025] py-2 px-1">
-            <!-- Loads Dynamically -->
-          </div>
-          
-          <div class="mt-4">
-            <span class="font-cinzel text-sm font-bold text-amber-900">25th November 2026</span>
-          </div>
-        </div>
-
-        <!-- Footer From -->
-        <div class="w-full pt-4 border-t border-amber-900/20 text-sm text-amber-950 font-medium text-center">
-          <span class="font-bold card-crimson uppercase tracking-wide">From :</span>
-          <p class="font-bold text-gray-900 mt-1">Mr. Ganesh Goswami & Family</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Guest Action Footer -->
-    <div class="w-full flex flex-wrap items-center justify-center gap-4 py-4">
-      <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Wedding+of+Priyanka+%26+Snehal&dates=20261125T133000Z/20261125T183000Z&details=Wedding+Ceremony+and+Reception+of+Priyanka+and+Snehal.&location=L.P.+Residency+%26+Marriage+Hall,+Makoli+More,+Central+Colony,+Phusro,+Jharkhand" target="_blank" class="px-5 py-3 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-xl text-sm font-bold shadow-lg flex items-center gap-2">
-        <i class="fa-solid fa-calendar-plus"></i> Add to Calendar
-      </a>
-      <a href="tel:8986619784" class="px-5 py-3 bg-gradient-to-r from-red-800 to-red-900 text-amber-100 rounded-xl text-sm font-bold shadow-lg flex items-center gap-2">
-        <i class="fa-solid fa-phone"></i> Call Host
-      </a>
+    <!-- Success Toast Notification -->
+    <div id="toast" class="fixed top-5 right-5 z-50 bg-yellow-500 text-black px-4 py-2 rounded-xl font-bold shadow-2xl transition transform duration-300 opacity-0 pointer-events-none flex items-center gap-2">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toast-msg">Personalized link copied!</span>
     </div>
-  </main>
 
-  <script>
-    // Falling Petals
-    function createPetal() {
-      const container = document.getElementById("petals-container");
-      if (!container) return;
-      const petal = document.createElement("div");
-      petal.className = "petal";
-      petal.style.left = `${Math.random() * window.innerWidth}px`;
-      petal.style.width = `${Math.random() * 12 + 10}px`;
-      petal.style.height = petal.style.width;
-      petal.style.animationDuration = `${Math.random() * 6 + 6}s`;
-      petal.style.borderRadius = "50% 0 50% 50%";
-      petal.style.backgroundColor = Math.random() > 0.45 ? `rgba(180, 20, 45, 0.7)` : `rgba(245, 166, 35, 0.7)`;
-      container.appendChild(petal);
-      setTimeout(() => petal.remove(), 12000);
-    }
-    setInterval(createPetal, 450);
+    <!-- ========================================================================= -->
+    <!-- WEDDING INVITATION PAGES CONTAINER (Exactly matching the original PDF)     -->
+    <!-- ========================================================================= -->
+    <main id="card-container" class="w-full max-w-2xl flex flex-col items-center gap-10 mb-16">
 
-    // Fetch Guest Name securely based on URL
-    window.onload = async function() {
-      // Get the ID from the end of the URL (e.g., /invite/8f3a5b2c)
-      const urlParts = window.location.pathname.split('/');
-      const guestId = urlParts[urlParts.length - 1]; 
-      
-      const displayEl = document.getElementById('guest-name-display');
+        <!-- ========================================== -->
+        <!-- PAGE 1: OUTER ENVELOPE / COVER             -->
+        <!-- ========================================== -->
+        <section id="page-1" class="wedding-page wedding-card-sheet w-full rounded-2xl p-6 sm:p-10 relative overflow-hidden transition-all duration-300">
+            <!-- Vintage Paper Decorative Outer Border -->
+            <div class="ornate-gold-border rounded-xl p-5 sm:p-8 flex flex-col items-center relative min-h-[700px] justify-between">
+                
+                <!-- Corner Motif Top-Left -->
+                <div class="absolute top-2 left-2 text-[#8e1025] opacity-70">
+                    <svg width="28" height="28" viewBox="0 0 40 40" fill="currentColor">
+                        <path d="M0 0 L40 0 C25 5, 5 25, 0 40 Z"/>
+                        <circle cx="12" cy="12" r="3" fill="#c59b27"/>
+                    </svg>
+                </div>
+                <!-- Corner Motif Top-Right -->
+                <div class="absolute top-2 right-2 text-[#8e1025] opacity-70 transform rotate-90">
+                    <svg width="28" height="28" viewBox="0 0 40 40" fill="currentColor">
+                        <path d="M0 0 L40 0 C25 5, 5 25, 0 40 Z"/>
+                        <circle cx="12" cy="12" r="3" fill="#c59b27"/>
+                    </svg>
+                </div>
 
-      try {
-        const response = await fetch(`/api/invites/public/${guestId}`);
-        if (response.ok) {
-          const data = await response.json();
-          displayEl.innerText = data.guestName;
-        } else {
-          displayEl.innerText = "Respected Guest & Family"; // Fallback if ID is wrong
+                <!-- Page Header: Butterfly filigree vector artwork exactly as in Page 1 of PDF -->
+                <div class="w-full flex flex-col items-center pt-2">
+                    <!-- SVG Butterfly Motif -->
+                    <div class="w-28 h-28 sm:w-36 sm:h-36 text-[#8e1025] hover:scale-105 transition duration-300 mb-2">
+                        <svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full drop-shadow">
+                            <!-- Butterfly Center Body -->
+                            <ellipse cx="100" cy="100" rx="6" ry="32" fill="#8e1025" />
+                            <circle cx="100" cy="62" r="6" fill="#8e1025" />
+                            <!-- Antennae -->
+                            <path d="M98 58 Q85 35 68 38 Q60 40 64 48 Q70 52 74 44" stroke="#8e1025" stroke-width="2.5" fill="none"/>
+                            <path d="M102 58 Q115 35 132 38 Q140 40 136 48 Q130 52 126 44" stroke="#8e1025" stroke-width="2.5" fill="none"/>
+                            
+                            <!-- Left Wing Outer -->
+                            <path d="M96 80 C60 20 15 45 15 85 C15 115 50 120 95 110" stroke="#8e1025" stroke-width="3.5" fill="rgba(142, 16, 37, 0.04)"/>
+                            <!-- Left Wing Filigree Spirals -->
+                            <path d="M50 65 Q70 50 85 75 Q75 95 55 85 Q40 78 50 65" stroke="#8e1025" stroke-width="2"/>
+                            <path d="M30 82 Q45 100 65 102" stroke="#8e1025" stroke-width="2"/>
+                            <!-- Left Lower Wing -->
+                            <path d="M95 115 C55 125 35 150 48 180 C62 205 90 170 96 130" stroke="#8e1025" stroke-width="3.2" fill="rgba(142, 16, 37, 0.04)"/>
+                            <path d="M60 148 Q75 170 82 155" stroke="#8e1025" stroke-width="2"/>
+                            
+                            <!-- Right Wing Outer -->
+                            <path d="M104 80 C140 20 185 45 185 85 C185 115 150 120 105 110" stroke="#8e1025" stroke-width="3.5" fill="rgba(142, 16, 37, 0.04)"/>
+                            <!-- Right Wing Filigree Spirals -->
+                            <path d="M150 65 Q130 50 115 75 Q125 95 145 85 Q160 78 150 65" stroke="#8e1025" stroke-width="2"/>
+                            <path d="M170 82 Q155 100 135 102" stroke="#8e1025" stroke-width="2"/>
+                            <!-- Right Lower Wing -->
+                            <path d="M105 115 C145 125 165 150 152 180 C138 205 110 170 104 130" stroke="#8e1025" stroke-width="3.2" fill="rgba(142, 16, 37, 0.04)"/>
+                            <path d="M140 148 Q125 170 118 155" stroke="#8e1025" stroke-width="2"/>
+                        </svg>
+                    </div>
+
+                    <!-- Couple Names in Script & Serif Font -->
+                    <div class="text-center my-1">
+                        <h2 class="text-3xl sm:text-4xl font-playfair font-bold card-crimson tracking-wider">
+                            Priyanka
+                        </h2>
+                        <span class="font-script text-2xl sm:text-3xl text-amber-800 my-0.5 block italic">
+                            Weds
+                        </span>
+                        <h2 class="text-3xl sm:text-4xl font-playfair font-bold card-crimson tracking-wider">
+                            Snehal
+                        </h2>
+                    </div>
+                </div>
+
+                <!-- Center Section: THE EDITABLE GUEST NAME PLACEHOLDER (Requested by User) -->
+                <div class="w-full my-6 bg-gradient-to-r from-amber-100/50 via-amber-50/80 to-amber-100/50 p-4 sm:p-5 rounded-xl border border-amber-300/80 shadow-inner">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-xs uppercase font-cinzel font-bold text-amber-900/80 tracking-widest flex items-center gap-1.5">
+                            <i class="fa-solid fa-envelope-open-text text-yellow-700"></i>
+                            To,
+                        </span>
+                        <span class="no-print text-[11px] font-sans text-amber-700 bg-amber-200/60 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <i class="fa-solid fa-pen-to-square"></i> Click to edit name directly
+                        </span>
+                    </div>
+
+                    <div class="text-sm font-semibold text-amber-950/70 mb-1">Mrs. / Mr.</div>
+                    
+                    <!-- Direct in-place editable field -->
+                    <div 
+                        id="guest-name-display" 
+                        contenteditable="true" 
+                        oninput="syncInputFromDisplay(this.innerText)"
+                        title="Click to edit guest name"
+                        class="text-xl sm:text-2xl font-serif font-bold text-[#8e1025] border-b-2 border-dotted border-[#8e1025]/70 py-1 px-1 focus:outline-none focus:border-yellow-600 focus:bg-amber-100/60 transition min-h-[38px]"
+                    >Mr. &amp; Mrs. Sharma &amp; Family</div>
+
+                    <div class="mt-2 text-right">
+                        <span class="inline-block px-3 py-1 bg-red-900/10 rounded-md font-bengali text-base font-bold card-crimson">
+                            শুভ বিবাহ
+                        </span>
+                        <span class="ml-2 font-cinzel text-xs font-bold text-amber-900">25-11-2026</span>
+                    </div>
+                </div>
+
+                <!-- Bottom Section: Sender Details from Page 1 of the PDF -->
+                <div class="w-full pt-4 border-t border-amber-900/20 text-xs sm:text-sm text-amber-950 font-medium">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
+                        <div>
+                            <span class="font-bold card-crimson text-sm uppercase tracking-wide">From :</span>
+                            <p class="font-bold text-base text-gray-900">Mr. Ganesh Goswami</p>
+                            <p class="text-gray-700">Qr. No. - 1B/147, Subhash Nagar</p>
+                            <p class="text-gray-700">Bermo, Dist. - Bokaro (Jharkhand)</p>
+                            <p class="font-semibold text-gray-800 mt-1 flex items-center gap-1.5">
+                                <i class="fa-solid fa-phone text-xs text-[#8e1025]"></i>
+                                Mob.: <a href="tel:8986619784" class="hover:underline">8986619784</a>
+                            </p>
+                        </div>
+
+                        <!-- Card Maker signature mark as printed in PDF Page 1 -->
+                        <div class="text-left sm:text-right text-[11px] text-gray-500 font-sans tracking-tight">
+                            <span class="border-t sm:border-t-0 border-gray-300 pt-1 block">
+                                SIDHI VINAYAK CARD CHAS
+                            </span>
+                            <span>M: 7321988166</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page number badge -->
+                <div class="no-print mt-4 text-[11px] font-cinzel tracking-widest text-amber-800/60">
+                    — PAGE 1 OF 4 : COVER —
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- PAGE 2: AUSPICIOUS SHLOKA & BLESSINGS      -->
+        <!-- ========================================== -->
+        <section id="page-2" class="wedding-page wedding-card-sheet w-full rounded-2xl p-6 sm:p-10 relative overflow-hidden transition-all duration-300">
+            <div class="ornate-gold-border rounded-xl p-8 sm:p-12 flex flex-col items-center justify-center text-center min-h-[600px] relative">
+                
+                <!-- Auspicious Mandalas and Top Deity Symbol -->
+                <div class="w-16 h-16 text-[#8e1025] mb-4">
+                    <svg viewBox="0 0 100 100" fill="currentColor">
+                        <!-- Lord Ganesha / Om Motif Emblem -->
+                        <path d="M50 5 C60 5 68 12 70 22 C72 32 65 40 55 42 C70 42 82 52 82 68 C82 85 66 95 50 95 C34 95 18 85 18 68 C18 52 30 42 45 42 C35 40 28 32 30 22 C32 12 40 5 50 5 Z M50 15 C44 15 40 20 40 26 C40 32 44 36 50 36 C56 36 60 32 60 26 C60 20 56 15 50 15 Z M50 50 C38 50 28 58 28 68 C28 78 38 86 50 86 C62 86 72 78 72 68 C72 58 62 50 50 50 Z" opacity="0.85"/>
+                    </svg>
+                </div>
+
+                <!-- Floral divider top -->
+                <div class="flex items-center gap-3 w-48 mx-auto my-3 text-amber-700">
+                    <div class="h-0.5 flex-1 bg-gradient-to-r from-transparent to-[#8e1025]"></div>
+                    <span class="text-lg">॥</span>
+                    <span class="text-sm">ॐ</span>
+                    <span class="text-lg">॥</span>
+                    <div class="h-0.5 flex-1 bg-gradient-to-l from-transparent to-[#8e1025]"></div>
+                </div>
+
+                <!-- The Sacred Wedding Shloka from Rigveda / Traditional Hindu Bengali Marriage (Page 2 of PDF) -->
+                <div class="my-8 max-w-lg px-4">
+                    <div class="text-3xl sm:text-4xl md:text-5xl font-bengali font-bold card-crimson leading-relaxed tracking-wider drop-shadow-sm">
+                        ॥ যদিদং হৃদয়ং মমঃ<br>
+                        তদিদং হৃদয়ং তব: ॥
+                    </div>
+
+                    <!-- Poetic English Translation -->
+                    <p class="font-playfair italic text-sm sm:text-base text-amber-900/90 mt-5 leading-relaxed">
+                        "That which is your heart, let it be my heart;<br>
+                        and that which is my heart, let it be yours."
+                    </p>
+                </div>
+
+                <!-- শুভ পরিণয় (Auspicious Union) -->
+                <div class="my-4">
+                    <div class="inline-block px-6 py-2 border-y-2 border-dashed border-[#8e1025]/50">
+                        <span class="font-bengali text-2xl sm:text-3xl font-bold card-crimson tracking-widest">
+                            শুভ পরিণয়
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Floral divider bottom -->
+                <div class="flex items-center gap-3 w-48 mx-auto my-4 text-amber-700">
+                    <div class="h-0.5 flex-1 bg-gradient-to-r from-transparent to-[#8e1025]"></div>
+                    <span class="text-xs">❀ 卐 ❀</span>
+                    <div class="h-0.5 flex-1 bg-gradient-to-l from-transparent to-[#8e1025]"></div>
+                </div>
+
+                <!-- Page number badge -->
+                <div class="no-print mt-6 text-[11px] font-cinzel tracking-widest text-amber-800/60">
+                    — PAGE 2 OF 4 : INVOCATION —
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- PAGE 3: ENGLISH INVITATION & PROGRAMME     -->
+        <!-- ========================================== -->
+        <section id="page-3" class="wedding-page wedding-card-sheet w-full rounded-2xl p-6 sm:p-10 relative overflow-hidden transition-all duration-300">
+            <div class="ornate-gold-border rounded-xl p-5 sm:p-8 flex flex-col items-center text-center relative">
+                
+                <!-- Top Invocation: Shri Shri Prajapataye Namah -->
+                <div class="w-full flex items-center justify-center gap-2 mb-3">
+                    <span class="text-[#8e1025] font-bold text-sm tracking-wider">卐</span>
+                    <p class="font-cinzel text-sm sm:text-base font-bold card-crimson tracking-widest">
+                        !! Shri Shri Prajapataye Namah !!
+                    </p>
+                    <span class="text-[#8e1025] font-bold text-sm tracking-wider">卐</span>
+                </div>
+
+                <!-- Decorative Wedding Motif: Hasta Melap (Hands Clasping) -->
+                <div class="w-40 sm:w-48 h-24 my-2 text-[#8e1025]">
+                    <svg viewBox="0 0 240 120" fill="none" stroke="currentColor" stroke-width="2.5" class="w-full h-full drop-shadow">
+                        <!-- Bride's Arm with Bangles & Mehendi -->
+                        <path d="M20 70 L60 65 L85 62 L120 75" stroke="#8e1025" stroke-width="3" />
+                        <line x1="30" y1="58" x2="33" y2="76" stroke="#8e1025" stroke-width="3"/>
+                        <line x1="38" y1="56" x2="41" y2="74" stroke="#8e1025" stroke-width="3"/>
+                        <line x1="46" y1="54" x2="49" y2="72" stroke="#8e1025" stroke-width="3"/>
+                        <line x1="54" y1="52" x2="57" y2="70" stroke="#8e1025" stroke-width="3"/>
+                        <!-- Mehendi Mandala on Bride's hand -->
+                        <circle cx="85" cy="55" r="7" stroke="#8e1025" stroke-width="1.8"/>
+                        <circle cx="85" cy="55" r="2.5" fill="#8e1025"/>
+                        <circle cx="85" cy="42" r="2" fill="#8e1025"/>
+                        <circle cx="85" cy="68" r="2" fill="#8e1025"/>
+                        <circle cx="72" cy="55" r="2" fill="#8e1025"/>
+                        <circle cx="98" cy="55" r="2" fill="#8e1025"/>
+
+                        <!-- Groom's Arm & Hand holding Bride's Hand -->
+                        <path d="M220 50 L170 58 L140 60 L110 70" stroke="#8e1025" stroke-width="3"/>
+                        <path d="M170 58 L160 35 L120 40 L95 55" stroke="#8e1025" stroke-width="2.5"/>
+                        <path d="M120 75 Q135 90 155 75" stroke="#8e1025" stroke-width="2.5"/>
+                        <!-- Clasping fingers -->
+                        <path d="M120 70 C130 65 140 70 145 80" stroke="#8e1025" stroke-width="2.2"/>
+                        <path d="M110 65 C120 60 130 65 135 75" stroke="#8e1025" stroke-width="2.2"/>
+                    </svg>
+                </div>
+
+                <!-- Host Parents Request Line -->
+                <div class="max-w-xl mx-auto my-2">
+                    <p class="font-cinzel text-base sm:text-lg font-bold text-gray-900 tracking-wide">
+                        Mrs. &amp; Mr. Ganesh Goswami
+                    </p>
+                    <p class="text-xs sm:text-sm text-gray-700 italic font-serif mt-1 px-4 leading-relaxed">
+                        Request the pleasure of your gracious presence on the auspicious occasion of the Wedding Ceremony of their only Daughter
+                    </p>
+                </div>
+
+                <!-- Bride Details -->
+                <div class="my-2 bg-red-900/5 py-2 px-6 rounded-xl border border-red-900/10 w-full max-w-lg">
+                    <h3 class="text-3xl sm:text-4xl font-playfair font-black card-crimson tracking-wide">
+                        Priyanka
+                    </h3>
+                    <p class="text-xs sm:text-sm text-gray-800 font-medium mt-1">
+                        D/o. <strong class="text-gray-950">Shri Ganesh Goswami</strong> &amp; <strong class="text-gray-950">Smt. Shubhra Goswami</strong>
+                    </p>
+                    <p class="text-xs text-gray-600">Qr. No. - 1B/147, Subhash Nagar, Bermo, Dist. - Bokaro (Jharkhand)</p>
+                </div>
+
+                <!-- "With" Typography -->
+                <div class="my-1">
+                    <span class="font-script text-3xl sm:text-4xl text-amber-800 block">With</span>
+                </div>
+
+                <!-- Groom Details -->
+                <div class="my-2 bg-red-900/5 py-2 px-6 rounded-xl border border-red-900/10 w-full max-w-lg">
+                    <h3 class="text-3xl sm:text-4xl font-playfair font-black card-crimson tracking-wide">
+                        Snehal
+                    </h3>
+                    <p class="text-xs sm:text-sm text-gray-800 font-medium mt-1">
+                        S/o. <strong class="text-gray-950">Shri Surendra Narayan Mishra</strong> &amp; <strong class="text-gray-950">Smt. Satya Mishra</strong>
+                    </p>
+                    <p class="text-xs text-gray-600">Pandit G Building, Near Kaharka Railway Crossing</p>
+                    <p class="text-xs text-gray-600">Jhanjhaur Road, Varanasi (U.P.)</p>
+                </div>
+
+                <!-- Invitation Note -->
+                <p class="text-xs sm:text-sm text-gray-700 italic my-2 max-w-md">
+                    You are cordially invited to attend the functions as per programme &amp; bless the couple.
+                </p>
+
+                <!-- Shehnai and Dhak/Nagada Vector Illustration exactly as in Page 3 -->
+                <div class="flex items-center justify-center gap-6 my-2 text-[#8e1025]">
+                    <!-- Shehnai & Nagada SVG -->
+                    <div class="w-32 h-20">
+                        <svg viewBox="0 0 160 100" fill="none" stroke="currentColor" stroke-width="2" class="w-full h-full">
+                            <!-- Shehnai (Trumpet/Flute) -->
+                            <path d="M120 15 L50 65 L40 75 L30 85" stroke="#8e1025" stroke-width="3"/>
+                            <path d="M120 15 L145 28 L135 48 L110 35 Z" fill="rgba(142, 16, 37, 0.2)" stroke="#8e1025" stroke-width="2.5"/>
+                            <circle cx="100" cy="30" r="1.5" fill="#8e1025"/>
+                            <circle cx="85" cy="40" r="1.5" fill="#8e1025"/>
+                            <circle cx="70" cy="50" r="1.5" fill="#8e1025"/>
+                            <path d="M120 15 Q135 5 140 18" stroke="#8e1025" stroke-width="1.8"/>
+                            
+                            <!-- Left Dhak Drum -->
+                            <ellipse cx="40" cy="75" rx="18" ry="10" stroke="#8e1025" stroke-width="2"/>
+                            <path d="M22 75 C22 90 30 95 40 95 C50 95 58 90 58 75" stroke="#8e1025" stroke-width="2"/>
+                            <!-- Drum Patterns -->
+                            <path d="M24 78 L32 94 L40 78 L48 94 L56 78" stroke="#8e1025" stroke-width="1.5"/>
+
+                            <!-- Right Drum -->
+                            <ellipse cx="80" cy="78" rx="20" ry="12" stroke="#8e1025" stroke-width="2"/>
+                            <path d="M60 78 C60 94 70 98 80 98 C90 98 100 94 100 78" stroke="#8e1025" stroke-width="2"/>
+                            <path d="M62 82 L72 97 L80 82 L88 97 L98 82" stroke="#8e1025" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- PROGRAMME BOX -->
+                <div class="w-full max-w-lg my-2 border-2 border-[#8e1025] rounded-xl p-4 bg-amber-50/60 shadow-sm">
+                    <h4 class="font-cinzel text-base font-bold card-crimson tracking-widest border-b border-[#8e1025]/40 pb-1 mb-2">
+                        PROGRAMME
+                    </h4>
+                    
+                    <div class="space-y-2 text-xs sm:text-sm text-left">
+                        <div class="flex items-start justify-between border-b border-amber-200 pb-1">
+                            <span class="font-bold text-gray-900 flex items-center gap-1.5">
+                                <i class="fa-solid fa-om text-xs text-[#8e1025]"></i> Audhibaas :
+                            </span>
+                            <span class="font-semibold text-gray-800">24-11-2026 (Tuesday)</span>
+                        </div>
+
+                        <div class="flex items-start justify-between border-b border-amber-200 pb-1">
+                            <span class="font-bold text-gray-900 flex items-center gap-1.5">
+                                <i class="fa-solid fa-sun text-xs text-yellow-600"></i> Haldi :
+                            </span>
+                            <span class="font-semibold text-gray-800">25-11-2026 (Wednesday)</span>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-amber-200 pb-1">
+                            <span class="font-bold text-gray-900 flex items-center gap-1.5">
+                                <i class="fa-solid fa-gem text-xs text-[#8e1025]"></i> Marriage &amp; Reception :
+                            </span>
+                            <span class="font-bold card-crimson">
+                                25-11-2026 (Wednesday)<br class="hidden sm:inline"> from 7.00 pm onwards
+                            </span>
+                        </div>
+
+                        <!-- Venue -->
+                        <div class="pt-1">
+                            <span class="font-bold card-crimson text-xs uppercase tracking-wide flex items-center gap-1.5">
+                                <i class="fa-solid fa-location-dot"></i> VENUE :
+                            </span>
+                            <p class="font-bold text-gray-900 text-sm mt-0.5">
+                                L.P. Residency &amp; Marriage Hall
+                            </p>
+                            <p class="text-xs text-gray-700">
+                                Makoli More, Central Colony, Phusro
+                            </p>
+                            <div class="mt-1">
+                                <a href="https://maps.google.com/?q=L.P.+Residency+Phusro+Bokaro" target="_blank" class="inline-flex items-center gap-1 text-[11px] text-blue-700 hover:underline font-semibold no-print">
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Open in Google Maps
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer: RSVP and Compliments -->
+                <div class="w-full max-w-lg mt-3 pt-3 border-t border-amber-900/30 text-xs text-left grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <span class="font-cinzel font-bold card-crimson block">R.S.V.P. —</span>
+                        <p class="text-gray-800 font-medium leading-relaxed">
+                            Kartik Goswami, Swaroop Sengupta, Rahul Chakraborty, Gautam Chakraborty, &amp; All Family Members.
+                        </p>
+                    </div>
+
+                    <div class="sm:text-right">
+                        <span class="font-cinzel font-bold text-gray-800 block">With Best Compliments from :</span>
+                        <p class="font-bold card-crimson text-sm mt-0.5">
+                            Shri Ganesh Goswami
+                        </p>
+                        <p class="font-bold card-crimson text-sm">
+                            &amp; Smt. Shubhra Goswami
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Page number badge -->
+                <div class="no-print mt-6 text-[11px] font-cinzel tracking-widest text-amber-800/60">
+                    — PAGE 3 OF 4 : ENGLISH INVITATION —
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- PAGE 4: TRADITIONAL BENGALI PATRIKA        -->
+        <!-- ========================================== -->
+        <section id="page-4" class="wedding-page wedding-card-sheet w-full rounded-2xl p-6 sm:p-10 relative overflow-hidden transition-all duration-300">
+            <div class="ornate-gold-border rounded-xl p-5 sm:p-8 flex flex-col font-bengali text-gray-900 relative">
+                
+                <!-- Bengali Header Top: শ্রী শ্রী প্রজাপতয়ে নমঃ -->
+                <div class="text-center mb-4">
+                    <p class="text-base sm:text-lg font-bold card-crimson tracking-wider">
+                        ।। শ্রী শ্রী প্রজাপতয়ে নমঃ ।।
+                    </p>
+                </div>
+
+                <!-- Top Grid: Bride and Groom details side by side (as structured on page 4) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b border-[#8e1025]/30">
+                    <!-- Bride Box (পাত্রী) -->
+                    <div class="bg-amber-100/40 p-3 rounded-lg border border-amber-300/60">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-xs bg-[#8e1025] text-white px-2 py-0.5 rounded font-bold">পাত্রী</span>
+                            <span class="text-xl sm:text-2xl font-bold card-crimson">প্রিয়ঙ্কা</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-gray-800">
+                            <strong>পিতা :</strong> শ্রী গণেশ গোস্বামী
+                        </p>
+                        <p class="text-xs sm:text-sm text-gray-800">
+                            <strong>মাতা :</strong> শ্রীমতী শুভ্রা গোস্বামী
+                        </p>
+                        <p class="text-xs text-gray-700 mt-1">
+                            নং ১বি/১৪৭, সুভাষ নগর, বেরমো, জেলা-বোকারো (ঝাড়খন্ড)
+                        </p>
+                    </div>
+
+                    <!-- Groom Box (পাত্র) -->
+                    <div class="bg-amber-100/40 p-3 rounded-lg border border-amber-300/60">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-xs bg-[#8e1025] text-white px-2 py-0.5 rounded font-bold">পাত্র</span>
+                            <span class="text-xl sm:text-2xl font-bold card-crimson">স্নেহল</span>
+                        </div>
+                        <p class="text-xs sm:text-sm text-gray-800">
+                            <strong>পিতা :</strong> শ্রী সুরেন্দ্র নারায়ণ মিশ্র
+                        </p>
+                        <p class="text-xs sm:text-sm text-gray-800">
+                            <strong>মাতা :</strong> শ্রীমতী সত্যা মিশ্র
+                        </p>
+                        <p class="text-xs text-gray-700 mt-1">
+                            পণ্ডিত জী বিল্ডিং, ঝাঞ্ঝোর রোড, বারাণসী (উ. প্র.)
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Traditional Bengali Letter Content -->
+                <div class="my-4 text-justify text-xs sm:text-sm leading-relaxed text-gray-800 space-y-3">
+                    <div class="text-left font-bold card-crimson text-sm sm:text-base">
+                        সবিনয় নিবেদন,
+                    </div>
+
+                    <p>
+                        মহাশয়/মহাশয়া, অত্রস্থলের শুভ সমাচার এই যে, শ্রী শ্রী প্রজাপতি ঋষির অনুকম্পায় এবং মঙ্গল শঙ্খ আর মাঙ্গলিক সানাইয়ের সুরে সুর মিলিয়ে পবিত্র বেদমন্ত্র <em>“যদিদং হৃদয়ং মমঃ তদিদং হৃদয়ং তব:”</em> উচ্চারণের মধ্য দিয়ে আগামী <strong>৮ই অগ্রহায়ণ ১৪৩৩ সাল (ইং 25-11-2026) বুধবার</strong> আমার একমাত্র কন্যা কল্যাণীয়া 
+                        <strong class="card-crimson text-sm sm:text-base font-bold">প্রিয়ঙ্কা</strong>-র সহিত পণ্ডিত জী বিল্ডিং, ঝাঞ্ঝোর রোড, বারাণসী (উ. প্র.) নিবাসী শ্রীযুক্ত সুরেন্দ্র নারায়ণ মিশ্র মহাশয়ের জ্যেষ্ঠ পুত্র কল্যাণীয় 
+                        <strong class="card-crimson text-sm sm:text-base font-bold">স্নেহল</strong> বাবাজীবনের শুভ পরিণয় অনুষ্ঠিত হইবে।
+                    </p>
+
+                    <p>
+                        এতদুপলক্ষে আপনি/আপনারা উক্ত দিবসে <strong>এল. পি. রেসিডেন্সী এন্ড ম্যারেজ হল</strong>, মকোলী মোড়, সেন্ট্রাল কলোনী, ফুসরো বাসভবনে উপস্থিত থাকিয়া শুভ কার্য্যাদি সুসম্পন্ন করাইয়া নবদম্পতিকে আশীর্বাদ করিয়া ও প্রীতিভোজে যোগদান করিয়া বাধিত করিবেন।
+                    </p>
+
+                    <p class="italic text-gray-600 text-[11px] sm:text-xs">
+                        পত্রের দ্বারা নিমন্ত্রণের ত্রুটি মার্জনা করিবেন।
+                    </p>
+                </div>
+
+                <!-- Signatories & Hospitality (বিনীত ও অতিথি আপ্যায়নে) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-2 pt-2 border-t border-amber-900/20 text-xs sm:text-sm">
+                    <div>
+                        <span class="font-bold card-crimson block mb-1">অতিথি আপ্যায়নে :</span>
+                        <p class="text-gray-800 leading-relaxed">
+                            কার্ত্তিক গোস্বামী, স্বরূপ সেনগুপ্ত, রাহুল চক্রবর্ত্তী, গৌতম চক্রবর্তী ও সমস্ত পরিবারবৃন্দ।
+                        </p>
+                    </div>
+
+                    <div class="sm:text-right">
+                        <span class="font-bold text-gray-900 block mb-1">নিবেদন ইতি, বিনীত/বিনীতা —</span>
+                        <p class="font-bold card-crimson text-sm">শ্রী গণেশ গোস্বামী</p>
+                        <p class="font-bold card-crimson text-sm">শ্রীমতী শুভ্রা গোস্বামী</p>
+                    </div>
+                </div>
+
+                <!-- Traditional Smarak Lipi (স্মারক লিপি / Schedule) -->
+                <div class="mt-4 border-2 border-[#8e1025] rounded-xl p-3 sm:p-4 bg-amber-50/80">
+                    <div class="flex items-center justify-center gap-3 mb-2 pb-1 border-b border-[#8e1025]/40 text-center">
+                        <span class="text-[#8e1025]">卐</span>
+                        <h4 class="text-base sm:text-lg font-bold card-crimson tracking-wider">
+                            স্মারক লিপি
+                        </h4>
+                        <span class="text-[#8e1025]">卐</span>
+                    </div>
+
+                    <div class="space-y-2 text-xs sm:text-sm">
+                        <div class="flex items-start gap-2">
+                            <span class="font-bold text-[#8e1025] whitespace-nowrap">• অধিবাস :</span>
+                            <span>৭ই অগ্রহায়ণ ১৪৩৩ সাল (ইং 24-11-2026) মঙ্গলবার।</span>
+                        </div>
+
+                        <div class="flex items-start gap-2">
+                            <span class="font-bold text-[#8e1025] whitespace-nowrap">• হলদী, শুভ বিবাহ ও প্রীতিভোজ :</span>
+                            <span>৮ই অগ্রহায়ণ ১৪৩৩ সাল (ইং 25-11-2026) বুধবার সন্ধ্যা ৭.০০ ঘটিকা হইতে আপনার আগমন পর্যন্ত।</span>
+                        </div>
+
+                        <div class="flex items-start gap-2 pt-1 border-t border-amber-200">
+                            <span class="font-bold text-[#8e1025] whitespace-nowrap">• স্থল :</span>
+                            <span>এল. পি. রেসিডেন্সী এন্ড ম্যারেজ হল, মকোলী মোড়, সেন্ট্রাল কলোনী, ফুসরো।</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Page number badge -->
+                <div class="no-print mt-6 text-center text-[11px] font-cinzel tracking-widest text-amber-800/60">
+                    — PAGE 4 OF 4 : BENGALI PATRIKA —
+                </div>
+            </div>
+        </section>
+
+        </main>
+
+    <script>
+        async function loadInvitation() {
+            const pathParts = window.location.pathname.split('/').filter(Boolean);
+            const token = pathParts[0] === 'invite' ? pathParts[1] : new URLSearchParams(window.location.search).get('token');
+            const display = document.getElementById('guest-name-display');
+
+            if (!token) {
+                display.textContent = 'Invitation link is incomplete.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/invites/public/${encodeURIComponent(token)}`);
+                if (!response.ok) throw new Error('Invitation not found');
+                const data = await response.json();
+                display.textContent = data.guestName;
+                document.title = `Wedding Invitation | ${data.guestName}`;
+            } catch (error) {
+                console.error(error);
+                display.textContent = 'This invitation link is invalid or expired.';
+            }
         }
-      } catch (e) {
-        displayEl.innerText = "Respected Guest & Family";
-      }
 
-      // Hide loading screen and fade in card
-      const loader = document.getElementById('loading');
-      loader.style.opacity = '0';
-      setTimeout(() => {
-        loader.style.display = 'none';
-        document.getElementById('card-container').classList.remove('opacity-0');
-      }, 800);
-    };
-  </script>
+        window.addEventListener('load', loadInvitation);
+    </script>
 </body>
 </html>
