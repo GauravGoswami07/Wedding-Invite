@@ -10,7 +10,25 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Great+Vibes&family=Marcellus&family=Noto+Serif+Bengali:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <style>
-    body { background: radial-gradient(circle at 50% 20%, #2b080c 0%, #150306 100%); font-family: "Montserrat", sans-serif; min-height: 100vh; color: #4a2810; }
+    /* Fixed background: the invitation pages scroll over it */
+    html { background: #150306; }
+    body {
+        background: #150306;
+        font-family: "Montserrat", sans-serif;
+        min-height: 100vh;
+        color: #4a2810;
+        position: relative;
+        isolation: isolate;
+    }
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        background: radial-gradient(circle at 50% 20%, #2b080c 0%, #150306 100%);
+        transform: translateZ(0);
+    }
     .font-cinzel { font-family: "Cinzel", serif; }
     .font-script { font-family: "Great Vibes", cursive; }
     .font-bengali { font-family: "Noto Serif Bengali", serif; }
@@ -19,8 +37,55 @@
     .ornate-gold-border { border: 2px solid #8b1327; outline: 1.5px solid #c59b27; outline-offset: 5px; position: relative; }
     .card-crimson { color: #8e1025; }
     
-    @keyframes petalFall { 0% { transform: translate3d(0, -10vh, 0) rotate(0deg); opacity: 0.9; } 100% { transform: translate3d(80px, 110vh, 0) rotate(360deg); opacity: 0; } }
-    .petal { position: fixed; pointer-events: none; z-index: 40; animation: petalFall linear infinite; }
+    @keyframes petalFall {
+        0% {
+            transform: translate3d(0, -12vh, 0) rotate(0deg);
+            opacity: 0;
+        }
+        8% { opacity: 0.9; }
+        50% {
+            transform: translate3d(calc(var(--drift) * 0.45), 55vh, 0) rotate(calc(var(--rotation) * 0.5));
+            opacity: 0.85;
+        }
+        100% {
+            transform: translate3d(var(--drift), 112vh, 0) rotate(var(--rotation));
+            opacity: 0;
+        }
+    }
+    .petal {
+        position: fixed;
+        top: -12vh;
+        left: 0;
+        width: var(--size, 14px);
+        height: calc(var(--size, 14px) * 0.62);
+        border-radius: 100% 0 100% 0;
+        background: linear-gradient(135deg, #f7c948 0%, #e9a23b 45%, #b94b25 100%);
+        opacity: 0;
+        pointer-events: none;
+        z-index: 10;
+        will-change: transform, opacity;
+        animation: petalFall var(--duration, 9s) linear var(--delay, 0s) infinite;
+        filter: drop-shadow(0 2px 2px rgba(0,0,0,.18));
+    }
+
+    .petal::after {
+        content: "";
+        position: absolute;
+        inset: 18% 48% 18% 48%;
+        border-radius: 50%;
+        background: rgba(255,255,255,.25);
+        transform: rotate(35deg);
+    }
+
+    .wedding-page,
+    header {
+        position: relative;
+        z-index: 20;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .petal { animation-play-state: paused; }
+    }
     .loading-screen { position: fixed; inset: 0; background: #150306; z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #c59b27; transition: opacity 0.8s; }
   </style>
 </head>
@@ -564,6 +629,36 @@
         }
 
         window.addEventListener('load', loadInvitation);
+
+        // Create decorative petals. They stay fixed to the viewport and
+        // animate independently while the invitation pages scroll normally.
+        (function createPetals() {
+            const container = document.getElementById('petals-container');
+            if (!container) return;
+
+            const petalCount = window.innerWidth < 640 ? 14 : 22;
+
+            for (let i = 0; i < petalCount; i++) {
+                const petal = document.createElement('span');
+                petal.className = 'petal';
+
+                const size = 9 + Math.random() * 10;
+                const duration = 7 + Math.random() * 7;
+                const delay = -(Math.random() * duration);
+                const startX = Math.random() * 100;
+                const drift = -80 + Math.random() * 160;
+                const rotation = 240 + Math.random() * 360;
+
+                petal.style.left = `${startX}vw`;
+                petal.style.setProperty('--size', `${size}px`);
+                petal.style.setProperty('--duration', `${duration}s`);
+                petal.style.setProperty('--delay', `${delay}s`);
+                petal.style.setProperty('--drift', `${drift}px`);
+                petal.style.setProperty('--rotation', `${rotation}deg`);
+
+                container.appendChild(petal);
+            }
+        })();
     </script>
 </body>
 </html>
