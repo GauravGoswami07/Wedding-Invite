@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | Wedding Invites</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen">
+
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
+    <div class="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full border border-gray-100">
+      <h2 class="text-2xl font-bold text-center text-red-900 mb-6">Admin Login</h2>
+      <input type="password" id="adminPassword" placeholder="Enter Admin Password" class="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-red-900 outline-none mb-4">
+      <button onclick="login()" class="w-full bg-red-900 hover:bg-red-800 text-white font-bold py-3 rounded-lg transition">Access Dashboard</button>
+      <p id="loginError" class="text-red-500 text-sm text-center mt-3 hidden">Incorrect password.</p>
+    </div>
+  </div>
+
+  <!-- MAIN DASHBOARD -->
+  <div id="dashboard" class="hidden max-w-5xl mx-auto p-6">
+    <div class="flex justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold text-red-900"><i class="fa-solid fa-rings-wedding mr-2"></i> Invitation Manager</h1>
+      <button onclick="logout()" class="text-sm bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg font-semibold">Logout</button>
+    </div>
+
+    <!-- Create Invite Section -->
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-8">
+      <h2 class="text-lg font-bold mb-4">Generate New Link</h2>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <input type="text" id="newGuestName" placeholder="e.g. Mr. & Mrs. Sharma & Family" class="flex-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-red-900 outline-none">
+        <button onclick="createInvite()" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold px-6 py-2 rounded-lg shadow transition">Generate Link</button>
+      </div>
+    </div>
+
+    <!-- Invites List -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <table class="w-full text-left">
+        <thead class="bg-gray-100 text-gray-600 text-sm uppercase">
+          <tr>
+            <th class="px-6 py-3">Guest Name</th>
+            <th class="px-6 py-3">Link ID</th>
+            <th class="px-6 py-3 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="invitesList" class="divide-y divide-gray-100">
+          <!-- Rows injected via JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-5 right-5 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-xl opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+  <script>
+    const baseUrl = window.location.origin;
+
+    // Check if already logged in
+    window.onload = () => {
+      if (localStorage.getItem('adminToken')) {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+        fetchInvites();
+      }
+    };
+
+    async function login() {
+      const pwd = document.getElementById('adminPassword').value;
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pwd })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        localStorage.setItem('adminToken', data.token);
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+        fetchInvites();
+      } else {
+        document.getElementById('loginError').classList.remove('hidden');
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('adminToken');
+      location.reload();
+    }
+
+    async function fetchInvites() {
+      const res = await fetch('/api/invites', {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('adminToken')}` }
+      });
+      if (res.status === 401 || res.status === 403) return logout();
+      const invites = await res.json();
+      
+      const tbody = document.getElementById('invitesList');
+      tbody.innerHTML = invites.map(inv => {
+        const fullLink = `${baseUrl}/invite/${inv.guestId}`;
+        const whatsappMsg = `Namaskar! You & your family are cordially invited to the wedding ceremony of Priyanka & Snehal on 25th November 2026.\n\nPlease find your invitation card here:\n\n${fullLink}`;
+        
+        return `
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 font-semibold text-gray-800">${inv.guestName}</td>
+            <td class="px-6 py-4 text-sm text-gray-500 font-mono">${inv.guestId}</td>
+            <td class="px-6 py-4 text-right space-x-2">
+              <button onclick="copyToClipboard('${fullLink}')" class="text-blue-600 hover:bg-blue-50 px-3 py-1 rounded" title="Copy Link"><i class="fa-solid fa-copy"></i></button>
+              <a href="https://wa.me/?text=${encodeURIComponent(whatsappMsg)}" target="_blank" class="text-green-600 hover:bg-green-50 px-3 py-1 rounded" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+              <a href="${fullLink}" target="_blank" class="text-gray-600 hover:bg-gray-100 px-3 py-1 rounded" title="Preview"><i class="fa-solid fa-eye"></i></a>
+              <button onclick="deleteInvite('${inv._id}')" class="text-red-600 hover:bg-red-50 px-3 py-1 rounded" title="Delete"><i class="fa-solid fa-trash"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function createInvite() {
+      const nameInput = document.getElementById('newGuestName');
+      if (!nameInput.value.trim()) return;
+
+      await fetch('/api/invites', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+        },
+        body: JSON.stringify({ guestName: nameInput.value.trim() })
+      });
+      
+      nameInput.value = '';
+      fetchInvites();
+      showToast('Link generated securely!');
+    }
+
+    async function deleteInvite(id) {
+      if(!confirm('Delete this invitation link?')) return;
+      await fetch(`/api/invites/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('adminToken')}` }
+      });
+      fetchInvites();
+      showToast('Deleted successfully');
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text);
+      showToast('Link copied to clipboard!');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.innerText = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      setTimeout(() => toast.classList.add('opacity-0', 'pointer-events-none'), 3000);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wedding Invitation | Priyanka & Snehal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Great+Vibes&family=Marcellus&family=Noto+Serif+Bengali:wght@400;600;700;800&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body { background: radial-gradient(circle at 50% 20%, #2b080c 0%, #150306 100%); font-family: "Montserrat", sans-serif; min-height: 100vh; color: #4a2810; }
+    .font-cinzel { font-family: "Cinzel", serif; }
+    .font-script { font-family: "Great Vibes", cursive; }
+    .font-bengali { font-family: "Noto Serif Bengali", serif; }
+    .font-playfair { font-family: "Playfair Display", serif; }
+    .wedding-card-sheet { background-color: #faf5eb; box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(197, 155, 39, 0.35); }
+    .ornate-gold-border { border: 2px solid #8b1327; outline: 1.5px solid #c59b27; outline-offset: 5px; position: relative; }
+    .card-crimson { color: #8e1025; }
+    
+    @keyframes petalFall { 0% { transform: translate3d(0, -10vh, 0) rotate(0deg); opacity: 0.9; } 100% { transform: translate3d(80px, 110vh, 0) rotate(360deg); opacity: 0; } }
+    .petal { position: fixed; pointer-events: none; z-index: 40; animation: petalFall linear infinite; }
+    .loading-screen { position: fixed; inset: 0; background: #150306; z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #c59b27; transition: opacity 0.8s; }
+  </style>
+</head>
+<body class="p-2 sm:p-4 md:p-8 flex flex-col items-center">
+
+  <!-- Loading Screen -->
+  <div id="loading" class="loading-screen font-cinzel text-xl text-yellow-500">
+    <i class="fa-solid fa-rings-wedding text-4xl mb-4 animate-pulse"></i>
+    Opening Invitation...
+  </div>
+  
+  <div id="petals-container" class="fixed inset-0 pointer-events-none z-30 overflow-hidden"></div>
+
+  <!-- MAIN CARD CONTAINER -->
+  <main id="card-container" class="w-full max-w-2xl flex flex-col items-center gap-10 mb-16 opacity-0 transition-opacity duration-1000">
+    
+    <!-- PAGE 1: COVER -->
+    <section class="wedding-page wedding-card-sheet w-full rounded-2xl p-6 sm:p-10 relative overflow-hidden">
+      <div class="ornate-gold-border rounded-xl p-5 sm:p-8 flex flex-col items-center relative min-h-[700px] justify-between">
+        
+        <!-- Headers & Names -->
+        <div class="w-full flex flex-col items-center pt-2">
+          <div class="text-center my-1 mt-10">
+            <h2 class="text-4xl sm:text-5xl font-playfair font-bold card-crimson tracking-wider">Priyanka</h2>
+            <span class="font-script text-3xl sm:text-4xl text-amber-800 my-2 block italic">Weds</span>
+            <h2 class="text-4xl sm:text-5xl font-playfair font-bold card-crimson tracking-wider">Snehal</h2>
+          </div>
+        </div>
+
+        <!-- THE SECURE GUEST NAME DISPLAY -->
+        <div class="w-full my-10 bg-gradient-to-r from-amber-100/50 via-amber-50/80 to-amber-100/50 p-6 rounded-xl border border-amber-300/80 shadow-inner text-center">
+          <span class="text-xs uppercase font-cinzel font-bold text-amber-900/80 tracking-widest flex items-center justify-center gap-1.5 mb-2">
+            <i class="fa-solid fa-envelope-open-text text-yellow-700"></i> To,
+          </span>
+          <div class="text-sm font-semibold text-amber-950/70 mb-2">Mrs. / Mr.</div>
+          
+          <!-- Fetched from Database via API -->
+          <div id="guest-name-display" class="text-2xl sm:text-3xl font-serif font-bold text-[#8e1025] py-2 px-1">
+            <!-- Loads Dynamically -->
+          </div>
+          
+          <div class="mt-4">
+            <span class="font-cinzel text-sm font-bold text-amber-900">25th November 2026</span>
+          </div>
+        </div>
+
+        <!-- Footer From -->
+        <div class="w-full pt-4 border-t border-amber-900/20 text-sm text-amber-950 font-medium text-center">
+          <span class="font-bold card-crimson uppercase tracking-wide">From :</span>
+          <p class="font-bold text-gray-900 mt-1">Mr. Ganesh Goswami & Family</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Guest Action Footer -->
+    <div class="w-full flex flex-wrap items-center justify-center gap-4 py-4">
+      <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=Wedding+of+Priyanka+%26+Snehal&dates=20261125T133000Z/20261125T183000Z&details=Wedding+Ceremony+and+Reception+of+Priyanka+and+Snehal.&location=L.P.+Residency+%26+Marriage+Hall,+Makoli+More,+Central+Colony,+Phusro,+Jharkhand" target="_blank" class="px-5 py-3 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-xl text-sm font-bold shadow-lg flex items-center gap-2">
+        <i class="fa-solid fa-calendar-plus"></i> Add to Calendar
+      </a>
+      <a href="tel:8986619784" class="px-5 py-3 bg-gradient-to-r from-red-800 to-red-900 text-amber-100 rounded-xl text-sm font-bold shadow-lg flex items-center gap-2">
+        <i class="fa-solid fa-phone"></i> Call Host
+      </a>
+    </div>
+  </main>
+
+  <script>
+    // Falling Petals
+    function createPetal() {
+      const container = document.getElementById("petals-container");
+      if (!container) return;
+      const petal = document.createElement("div");
+      petal.className = "petal";
+      petal.style.left = `${Math.random() * window.innerWidth}px`;
+      petal.style.width = `${Math.random() * 12 + 10}px`;
+      petal.style.height = petal.style.width;
+      petal.style.animationDuration = `${Math.random() * 6 + 6}s`;
+      petal.style.borderRadius = "50% 0 50% 50%";
+      petal.style.backgroundColor = Math.random() > 0.45 ? `rgba(180, 20, 45, 0.7)` : `rgba(245, 166, 35, 0.7)`;
+      container.appendChild(petal);
+      setTimeout(() => petal.remove(), 12000);
+    }
+    setInterval(createPetal, 450);
+
+    // Fetch Guest Name securely based on URL
+    window.onload = async function() {
+      // Get the ID from the end of the URL (e.g., /invite/8f3a5b2c)
+      const urlParts = window.location.pathname.split('/');
+      const guestId = urlParts[urlParts.length - 1]; 
+      
+      const displayEl = document.getElementById('guest-name-display');
+
+      try {
+        const response = await fetch(`/api/invites/public/${guestId}`);
+        if (response.ok) {
+          const data = await response.json();
+          displayEl.innerText = data.guestName;
+        } else {
+          displayEl.innerText = "Respected Guest & Family"; // Fallback if ID is wrong
+        }
+      } catch (e) {
+        displayEl.innerText = "Respected Guest & Family";
+      }
+
+      // Hide loading screen and fade in card
+      const loader = document.getElementById('loading');
+      loader.style.opacity = '0';
+      setTimeout(() => {
+        loader.style.display = 'none';
+        document.getElementById('card-container').classList.remove('opacity-0');
+      }, 800);
+    };
+  </script>
+</body>
+</html>
