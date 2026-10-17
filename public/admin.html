@@ -148,10 +148,28 @@
         tbody.innerHTML = invites
           .map((inv) => {
             const fullLink = `${baseUrl}/invite/${inv.guestId}`;
-            const whatsappMsg = `We cordially invite you and your family\nto celebrate the wedding of our daughter, Priyanka with Snehal.\n\n \u{1F5D3}\u{FE0F} Date: 25th November 2026
-      \n\n \u{1F4CD} Venue: L.P. Residency & Marriage Hall, Phusro \n\n \u{1F48C} Tap here to view the invitation card & details:\n\n \u{1F449}   ${fullLink}
-      \n\nWarm regards,
-      \nGanesh Goswami & Family`;
+            
+const calendar = String.fromCodePoint(0x1F5D3, 0xFE0F);
+const location = String.fromCodePoint(0x1F4CD);
+const envelope = String.fromCodePoint(0x1F48C);
+const pointingHand = String.fromCodePoint(0x1F449);
+
+const whatsappMsg = `We cordially invite you and your family
+to celebrate the wedding of our daughter, Priyanka with Snehal.
+
+${calendar} Date: 25th November 2026
+
+${location} Venue: L.P. Residency & Marriage Hall, Phusro
+
+${envelope} Tap here to view the invitation card & details:
+${pointingHand} ${fullLink}
+
+Warm regards,
+Ganesh Goswami & Family`;
+
+const whatsappURL =
+  `https://wa.me/?text=${encodeURIComponent(whatsappMsg)}`;
+
 
             return `
                 <tr class="hover:bg-gray-50">
@@ -159,7 +177,7 @@
                   <td class="px-6 py-4 text-sm text-gray-500 font-mono">${inv.guestId}</td>
                   <td class="px-6 py-4 text-right space-x-2">
                     <button onclick="copyToClipboard('${fullLink}')" class="text-blue-600 hover:bg-blue-50 px-3 py-1 rounded" title="Copy Link"><i class="fa-solid fa-copy"></i></button>
-                    <a href="https://wa.me/?text=${encodeURIComponent(whatsappMsg)}" target="_blank" class="text-green-600 hover:bg-green-50 px-3 py-1 rounded" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                    <a href="${whatsappURL}" target="_blank" rel="noopener noreferrer" class="text-green-600 hover:bg-green-50 px-3 py-1 rounded" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
                     <a href="${fullLink}" target="_blank" class="text-gray-600 hover:bg-gray-100 px-3 py-1 rounded" title="Preview"><i class="fa-solid fa-eye"></i></a>
                     <button onclick="deleteInvite('${inv._id}')" class="text-red-600 hover:bg-red-50 px-3 py-1 rounded" title="Delete"><i class="fa-solid fa-trash"></i></button>
                   </td>
